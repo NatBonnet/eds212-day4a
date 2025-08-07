@@ -4,23 +4,128 @@ format: html
 editor: visual
 ---
 
-## Quarto
-
-Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>.
-
-## Running Code
-
-When you click the **Render** button a document will be generated that includes both content and the output of embedded code. You can embed code like this:
-
+## Matrices 
+must contain data of a single class
 ```{r}
-1 + 1
+# make a sequence of values from 1 to 10
+
+my_values <- seq(from = 1, to = 10, by= 1)
+
+# look at values
+my_values 
 ```
 
-You can add options to executable code like this
+```{r}
+# convert into a matrix
+my_matrix <- matrix(data = my_values ,
+                    nrow = 2, 
+                    ncol = 5, 
+                    byrow = TRUE)
+# if you wrote byrow =  FALSE it would  write by column
+my_matrix
+```
+```{r}
+matrix(data = my_values, 
+       nrow =2, 
+       ncol = 3, 
+       byrow = TRUE) # dimensions were 2 by 3 so R cut out 7-10
+```
+## Matrix math
 
 ```{r}
-#| echo: false
-2 * 2
+4*my_matrix
 ```
 
-The `echo: false` option disables the printing of code (only output is displayed).
+
+```{r}
+my_values2 <- seq(from = 21, to = 30)
+my_matrix2 <- matrix(my_values2, nrow = 2, byrow = TRUE)
+my_matrix2
+```
+## More matrix math
+
+```{r}
+my_matrix + my_matrix2
+
+my_matrix - my_matrix2
+
+my_matrix2 - my_matrix
+```
+## Matrix multiplication
+
+```{r}
+cats <- matrix(data = c(0, 4, 3, 1), nrow =2, byrow = TRUE)
+dogs <- matrix(data = c(6, -3, 0, 2), nrow = 2, byrow = TRUE)
+
+cats
+dogs
+```
+```{r}
+# matrix multiplication
+
+cats%*%dogs
+```
+
+## Leslie matrix example
+
+```{r}
+# reproducing leslie matrix 
+# creating central matrix- how does pop at time t get projecting into the second variable
+insect_leslie <- matrix(data = c(0, 0, 600, 0.2, 0, 0, 0, 0.08, 0), nrow = 3, ncol = 3, byrow =TRUE)
+
+insect_leslie
+```
+```{r}
+# insect life stage pop at y = 0
+insect_y0 <-  c(1200, 700, 500 )
+
+# find pop for each lifestage
+
+insect_y1 <- insect_leslie %*% insect_y0
+
+insect_y1 # returns population at each life stage in year 2
+```
+## Find pop for each life stage at year 2 
+```{r}
+insect_y2 <- insect_leslie%*%insect_y1 #the initial conditions are simply the pop at year 1 
+insect_y2
+
+insect_y3 <- insect_leslie%*%insect_y2
+
+insect_y3
+
+#etc...
+
+```
+## ANOTHER LESLIE?
+
+```{r}
+# 3 life stages of trees : sees, juveniles, adults
+# there are 500 seeds, assume 10% survive to juveniles, and 6% survive to adulthood- 95% of adults survive each year
+#seeds > juveniles> adults> still alive
+# a col for each life stage
+tree_leslie <- matrix(data = c(0, 0, 5000, 0.1, 0, 0, 0, 0.6, 0.95), nrow =3, ncol = 3, byrow = TRUE)
+
+tree_leslie
+
+```
+
+```{r}
+# create initial conditions at year 0
+tree_0 <- c(5000, 0, 0)
+
+tree_1 <- tree_leslie%*%tree_0
+tree_1
+
+tree_2 <- tree_leslie%*%tree_1
+tree_2
+
+tree_3 <- tree_leslie%*%tree_2
+tree_3
+
+tree_4 <- tree_leslie%*%tree_3
+tree_4
+#takes 4 years until there is a more evenly stratified populaton across age classes
+# useful for understanding how long it might take for a reintroduction to be self sustaining and less vulnerable
+```
+
